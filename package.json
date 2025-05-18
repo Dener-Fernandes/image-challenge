@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start:dev": "tsnd --respawn --transpile-only --ignore-watch node_modules ./src/application/server.ts",
+    "start:dev": "tsnd --respawn --transpile-only --ignore-watch node_modules -r dotenv/config ./src/application/server.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

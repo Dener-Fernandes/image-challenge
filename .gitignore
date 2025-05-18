@@ -4,8 +4,9 @@ node_modules
 # dotenv environment variable files
 .env
 
-# tmp directory
+# images directories
 tmp
+output
 
 # Docker
 docker-compose.yml
