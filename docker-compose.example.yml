@@ -1,0 +1,10 @@
+version:
+
+services:
+  rabbitmq:
+    image:
+    container_name:
+    ports:
+    environment:
+      RABBITMQ_DEFAULT_USER:
+      RABBITMQ_DEFAULT_PASS:
