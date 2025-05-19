@@ -8,3 +8,13 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER:
       RABBITMQ_DEFAULT_PASS:
+
+  mongodb:
+    image:
+    container_name:
+    restart:
+    ports:
+
+    environment:
+      MONGO_INITDB_ROOT_USERNAME:
+      MONGO_INITDB_ROOT_PASSWORD:

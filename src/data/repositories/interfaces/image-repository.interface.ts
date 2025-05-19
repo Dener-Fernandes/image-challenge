@@ -1,7 +1,8 @@
 import { ImageInterface } from "../../../domain/interfaces/image.interface";
 
 interface ImageRepositoryInterface {
-  create(task: ImageInterface): Promise<void>;
+  create(image: ImageInterface): Promise<void>;
+  getImageStatus(taskId: string): Promise<string | null>;
 }
 
 export { ImageRepositoryInterface };

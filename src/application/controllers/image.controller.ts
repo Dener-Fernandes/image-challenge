@@ -13,6 +13,7 @@ class ImageController {
     );
 
     this.uploadImage = this.uploadImage.bind(this);
+    this.getImageStatus = this.getImageStatus.bind(this);
   }
 
   async uploadImage(req: Request, res: Response): Promise<void> {
@@ -21,6 +22,14 @@ class ImageController {
     const result = await this.imageUseCase.uploadImage(file);
 
     res.status(200).json(result);
+  }
+
+  async getImageStatus(req: Request, res: Response): Promise<void> {
+    const taskId = req.params.task_id;
+
+    const status = await this.imageUseCase.getImageStatus(taskId);
+
+    res.status(200).json({ status });
   }
 }
 
