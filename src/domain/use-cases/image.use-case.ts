@@ -3,6 +3,7 @@ import { QueueServiceInterface } from "../../application/services/interfaces/que
 import { ImageInterface } from "../interfaces/image.interface";
 import { ImageStatus } from "../enums/image-status.enum";
 import { ImageRepositoryInterface } from "../../data/repositories/interfaces/image-repository.interface";
+import { ErrorsEnum } from "../enums/errors.enum";
 
 class ImageUseCase {
   constructor(
@@ -11,7 +12,7 @@ class ImageUseCase {
   ) {}
 
   async uploadImage(image: Express.Multer.File) {
-    if (!image) throw new Error("Image was not sent");
+    if (!image) throw ErrorsEnum.IMAGE_WAS_NOT_SENT;
 
     const taskId = uuidv4();
 
