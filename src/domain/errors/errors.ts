@@ -13,6 +13,11 @@ const errorsDescription: ErrorsInterface[] = [
     message: "This file is not an image",
   },
   {
+    title: "IMAGE_NOT_FOUND",
+    status: 400,
+    message: "Image not found",
+  },
+  {
     title: "INTERNAL_SERVER_ERROR",
     status: 500,
     message: "Internal Server Error.",

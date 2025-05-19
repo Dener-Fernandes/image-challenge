@@ -3,7 +3,7 @@ import fs from "fs/promises";
 import sharp from "sharp";
 import { RabbitMQService } from "../services/rabbitmq.service";
 import { ImageUseCase } from "../../domain/use-cases/image.use-case";
-import { ImageStatus } from "../../domain/enums/image-status.enum";
+import { ImageStatusEnum } from "../../domain/enums/image-status.enum";
 import { ImageRepository } from "../../data/repositories/image.repository";
 
 const rabbitMQUrl = process.env.RABBITMQ_URL;
@@ -49,7 +49,7 @@ async function startWorker() {
         originalFilename,
         mimetype,
         processedAt: new Date(),
-        status: ImageStatus.COMPLETED,
+        status: ImageStatusEnum.COMPLETED,
         errorMessage: null,
         originalMetadata: {
           width: metadata.width,
@@ -74,7 +74,7 @@ async function startWorker() {
         originalFilename,
         mimetype,
         processedAt: new Date(),
-        status: ImageStatus.FAILED,
+        status: ImageStatusEnum.FAILED,
         errorMessage: error.message,
         originalMetadata: null,
         versions: null,

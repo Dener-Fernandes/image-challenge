@@ -1,7 +1,7 @@
-enum ImageStatus {
+enum ImageStatusEnum {
   PENDING = "PENDING",
   COMPLETED = "COMPLETED",
   FAILED = "FAILED",
 }
 
-export { ImageStatus };
+export { ImageStatusEnum };

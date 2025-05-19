@@ -1,10 +1,10 @@
-import { ImageStatus } from "../enums/image-status.enum";
+import { ImageStatusEnum } from "../enums/image-status.enum";
 import { OriginalMetadataInterface } from "./original-metadata.interface";
 
 interface ImageInterface {
   taskId: string;
   originalFilename: string;
-  status: ImageStatus;
+  status: ImageStatusEnum;
   errorMessage: string | null;
   mimetype: string;
   processedAt: Date;
