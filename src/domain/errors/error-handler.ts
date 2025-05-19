@@ -1,7 +1,7 @@
 import { ErrorsInterface } from "../interfaces/error.interface";
 import { errorsDescription } from "./errors";
 
-function errorHandler(exception: unknown): ErrorsInterface {
+function errorHandler(exception: string | Error): ErrorsInterface {
   const errorTitle =
     typeof exception === "string"
       ? exception

@@ -1,13 +1,13 @@
 // src/infra/database/models/image.model.ts
 import { Schema, model } from "mongoose";
-import { ImageStatus } from "../../domain/enums/image-status.enum";
+import { ImageStatusEnum } from "../../domain/enums/image-status.enum";
 
 const imageSchema = new Schema({
   taskId: { type: String, required: true },
   originalFilename: { type: String, required: true },
   status: {
     type: String,
-    enum: ImageStatus,
+    enum: ImageStatusEnum,
     required: true,
   },
   originalMetadata: {

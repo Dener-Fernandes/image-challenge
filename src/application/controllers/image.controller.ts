@@ -25,18 +25,24 @@ class ImageController {
 
       res.status(200).json(result);
     } catch (error) {
-      const handledError = errorHandler(error as string);
+      const handledError = errorHandler(error);
 
       res.status(handledError.status).json({ message: handledError.message });
     }
   }
 
   async getImageStatus(req: Request, res: Response): Promise<void> {
-    const taskId = req.params.task_id;
+    try {
+      const taskId = req.params.task_id;
 
-    const status = await this.imageUseCase.getImageStatus(taskId);
+      const status = await this.imageUseCase.getImageStatus(taskId);
 
-    res.status(200).json({ status });
+      res.status(200).json({ status });
+    } catch (error) {
+      const handledError = errorHandler(error);
+
+      res.status(handledError.status).json({ message: handledError.message });
+    }
   }
 }
 
