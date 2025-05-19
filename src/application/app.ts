@@ -16,7 +16,7 @@ const dataBase = process.env.DATABASE.replace(
 
 connect(dataBase)
   .then(() => console.log("Connected to database"))
-  .catch((err) => {
+  .catch((error) => {
     console.log("Could not connect to database");
   });
 

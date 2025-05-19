@@ -2,6 +2,7 @@ import { Response, Request } from "express";
 import { ImageUseCase } from "../../domain/use-cases/image.use-case";
 import { RabbitMQService } from "../services/rabbitmq.service";
 import { ImageRepository } from "../../data/repositories/image.repository";
+import { errorHandler } from "../../domain/errors/error-handler";
 
 class ImageController {
   private readonly imageUseCase: ImageUseCase;
@@ -17,11 +18,17 @@ class ImageController {
   }
 
   async uploadImage(req: Request, res: Response): Promise<void> {
-    const { file } = req;
+    try {
+      const { file } = req;
 
-    const result = await this.imageUseCase.uploadImage(file);
+      const result = await this.imageUseCase.uploadImage(file);
 
-    res.status(200).json(result);
+      res.status(200).json(result);
+    } catch (error) {
+      const handledError = errorHandler(error as string);
+
+      res.status(handledError.status).json({ message: handledError.message });
+    }
   }
 
   async getImageStatus(req: Request, res: Response): Promise<void> {

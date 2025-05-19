@@ -1,0 +1,6 @@
+enum ErrorsEnum {
+  IMAGE_WAS_NOT_SENT = "IMAGE_WAS_NOT_SENT",
+  THIS_FILE_IS_NOT_AN_IMAGE = "THIS_FILE_IS_NOT_AN_IMAGE",
+}
+
+export { ErrorsEnum };

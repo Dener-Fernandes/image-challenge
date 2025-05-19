@@ -2,6 +2,8 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { Request, Response, NextFunction } from "express";
+import { errorHandler } from "../../domain/errors/error-handler";
+import { ErrorsEnum } from "../../domain/enums/errors.enum";
 
 const tmpFolder = path.resolve(__dirname, "../tmp");
 
@@ -26,7 +28,7 @@ const fileFilter = (
   if (file.mimetype.startsWith("image/")) {
     cb(null, true);
   } else {
-    cb(new Error("This file is not an image"));
+    cb(new Error(ErrorsEnum.THIS_FILE_IS_NOT_AN_IMAGE));
   }
 };
 
@@ -37,13 +39,19 @@ export const handleUpload = (
   res: Response,
   next: NextFunction,
 ) => {
-  upload(req, res, (err: any) => {
-    if (err instanceof multer.MulterError) {
+  upload(req, res, (error: any) => {
+    if (error instanceof multer.MulterError) {
+      const handledError = errorHandler(error.message as string);
+
       return res
-        .status(400)
-        .json({ error: "Error when uploading image", details: err.message });
-    } else if (err) {
-      return res.status(400).json({ error: "Error when uploading image" });
+        .status(handledError.status)
+        .json({ message: handledError.message });
+    } else if (error) {
+      const handledError = errorHandler(error as string);
+
+      return res
+        .status(handledError.status)
+        .json({ message: handledError.message });
     }
 
     next();
