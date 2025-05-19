@@ -1,4 +1,4 @@
-import { TaskPayloadInterface } from "../../domain/interfaces/task-payload.interface";
+import { ImageInterface } from "../../domain/interfaces/image.interface";
 import { ImageModel } from "../models/image.model";
 import { ImageRepositoryInterface } from "./interfaces/image-repository.interface";
 
@@ -13,8 +13,8 @@ class ImageRepository implements ImageRepositoryInterface {
     return ImageRepository.INSTANCE;
   }
 
-  async create(task: TaskPayloadInterface): Promise<void> {
-    await ImageModel.create(task);
+  async create(image: ImageInterface): Promise<void> {
+    await ImageModel.create(image);
   }
 }
 

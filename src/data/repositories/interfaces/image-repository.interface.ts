@@ -1,7 +1,7 @@
-import { TaskPayloadInterface } from "../../../domain/interfaces/task-payload.interface";
+import { ImageInterface } from "../../../domain/interfaces/image.interface";
 
 interface ImageRepositoryInterface {
-  create(task: TaskPayloadInterface): Promise<void>;
+  create(task: ImageInterface): Promise<void>;
 }
 
 export { ImageRepositoryInterface };
