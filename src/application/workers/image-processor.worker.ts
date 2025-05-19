@@ -4,6 +4,7 @@ import sharp from "sharp";
 import { RabbitMQService } from "../services/rabbitmq.service";
 import { ImageUseCase } from "../../domain/use-cases/image.use-case";
 import { ImageStatus } from "../../domain/enums/image-status.enum";
+import { ImageRepository } from "../../data/repositories/image.repository";
 
 const rabbitMQUrl = process.env.RABBITMQ_URL;
 const queueName = process.env.QUEUE_NAME;
@@ -13,7 +14,8 @@ async function startWorker() {
   const rabbitService = new RabbitMQService(rabbitMQUrl);
   await rabbitService.connect();
 
-  const imageUseCase = new ImageUseCase(rabbitService);
+  const imageRepository = ImageRepository.getInstance();
+  const imageUseCase = new ImageUseCase(rabbitService, imageRepository);
 
   await fs.mkdir(outputDir, { recursive: true });
 
@@ -42,7 +44,7 @@ async function startWorker() {
       const mediumStats = await fs.stat(versions.medium);
       const highStats = await fs.stat(versions.high_optimized);
 
-      await imageUseCase.save({
+      await imageUseCase.create({
         taskId,
         originalFilename,
         mimetype,
@@ -67,7 +69,7 @@ async function startWorker() {
 
       rabbitService.acknowledge(msg);
     } catch (error) {
-      await imageUseCase.save({
+      await imageUseCase.create({
         taskId,
         originalFilename,
         mimetype,

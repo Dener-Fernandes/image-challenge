@@ -2,9 +2,13 @@ import { v4 as uuidv4 } from "uuid";
 import { QueueServiceInterface } from "../../application/services/interfaces/queue-service.interface";
 import { ImageInterface } from "../interfaces/image.interface";
 import { ImageStatus } from "../enums/image-status.enum";
+import { ImageRepositoryInterface } from "../../data/repositories/interfaces/image-repository.interface";
 
 class ImageUseCase {
-  constructor(private readonly queueService: QueueServiceInterface) {}
+  constructor(
+    private readonly queueService: QueueServiceInterface,
+    private readonly imageRepository: ImageRepositoryInterface,
+  ) {}
 
   async uploadImage(image: Express.Multer.File) {
     if (!image) throw new Error("Image was not sent");
@@ -30,8 +34,8 @@ class ImageUseCase {
     };
   }
 
-  async save(image: ImageInterface) {
-    // TO DO
+  async create(image: ImageInterface) {
+    await this.imageRepository.create(image);
   }
 }
 

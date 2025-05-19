@@ -1,6 +1,7 @@
 import { Response, Request } from "express";
 import { ImageUseCase } from "../../domain/use-cases/image.use-case";
 import { RabbitMQService } from "../services/rabbitmq.service";
+import { ImageRepository } from "../../data/repositories/image.repository";
 
 class ImageController {
   private readonly imageUseCase: ImageUseCase;
@@ -8,6 +9,7 @@ class ImageController {
   constructor() {
     this.imageUseCase = new ImageUseCase(
       new RabbitMQService(process.env.RABBITMQ_URL),
+      ImageRepository.getInstance(),
     );
 
     this.uploadImage = this.uploadImage.bind(this);
