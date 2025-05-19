@@ -37,6 +37,16 @@ class ImageUseCase {
   async create(image: ImageInterface) {
     await this.imageRepository.create(image);
   }
+
+  async getImageStatus(taskId: string): Promise<string> {
+    if (!taskId) throw new Error("task_id was not sent");
+
+    const status = await this.imageRepository.getImageStatus(taskId);
+
+    if (!status) throw new Error("Image not found");
+
+    return status;
+  }
 }
 
 export { ImageUseCase };

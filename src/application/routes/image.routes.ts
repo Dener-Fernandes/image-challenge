@@ -7,5 +7,10 @@ const imageRoutes = express.Router();
 const imageController = new ImageController();
 
 imageRoutes.post("/", handleUpload, imageController.uploadImage);
+imageRoutes.get(
+  "/status/:task_id",
+  handleUpload,
+  imageController.getImageStatus,
+);
 
 export { imageRoutes };

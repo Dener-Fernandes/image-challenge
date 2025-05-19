@@ -16,6 +16,12 @@ class ImageRepository implements ImageRepositoryInterface {
   async create(image: ImageInterface): Promise<void> {
     await ImageModel.create(image);
   }
+
+  async getImageStatus(taskId: string): Promise<string | null> {
+    const result = await ImageModel.findOne({ taskId }, { status: 1 }).lean();
+
+    return result?.status || null;
+  }
 }
 
 export { ImageRepository };

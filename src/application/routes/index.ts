@@ -3,6 +3,6 @@ import { imageRoutes } from "./image.routes";
 
 const routes = express.Router();
 
-routes.use("/upload", imageRoutes);
+routes.use("/images", imageRoutes);
 
 export { routes };
