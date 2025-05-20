@@ -9,7 +9,7 @@ const app = express();
 
 dotenv.config({ path: "./.env" });
 
-const dataBase = process.env.DATABASE;
+const dataBase = process.env.DATABASE_URL;
 
 connect(dataBase)
   .then(() => console.log("Connected to database"))

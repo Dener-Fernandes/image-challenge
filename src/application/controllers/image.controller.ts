@@ -23,7 +23,7 @@ class ImageController {
 
       const result = await this.imageUseCase.uploadImage(file);
 
-      res.status(200).json(result);
+      res.status(201).json(result);
     } catch (error) {
       const handledError = errorHandler(error);
 
