@@ -14,7 +14,7 @@ const errorsDescription: ErrorsInterface[] = [
   },
   {
     title: "IMAGE_NOT_FOUND",
-    status: 400,
+    status: 404,
     message: "Image not found",
   },
   {

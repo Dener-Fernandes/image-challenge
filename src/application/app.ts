@@ -9,10 +9,7 @@ const app = express();
 
 dotenv.config({ path: "./.env" });
 
-const dataBase = process.env.DATABASE.replace(
-  "<PASSWORD>",
-  process.env.DATABASE_PASSWORD,
-);
+const dataBase = process.env.DATABASE;
 
 connect(dataBase)
   .then(() => console.log("Connected to database"))
