@@ -3,9 +3,14 @@ import { ErrorsInterface } from "../interfaces/error.interface";
 // The last error always needs to be the INTERNAL_SERVER_ERRROR
 const errorsDescription: ErrorsInterface[] = [
   {
-    title: "IMAGE_WAS_NOT_SENT",
+    title: "IMAGE_WAS_NOT_PROVIDED",
     status: 400,
-    message: "Image was not sent",
+    message: "Image was not provided",
+  },
+  {
+    title: "TASK_ID_WAS_NOT_PROVIDED",
+    status: 400,
+    message: "task_id was not provided",
   },
   {
     title: "THIS_FILE_IS_NOT_AN_IMAGE",

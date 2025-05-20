@@ -15,7 +15,7 @@ class ImageUseCase {
   async uploadImage(
     image: Express.Multer.File,
   ): Promise<UploadImageResponseInterface> {
-    if (!image) throw ErrorsEnum.IMAGE_WAS_NOT_SENT;
+    if (!image) throw ErrorsEnum.IMAGE_WAS_NOT_PROVIDED;
 
     const taskId = uuidv4();
 
@@ -43,7 +43,8 @@ class ImageUseCase {
   }
 
   async getImageStatus(taskId: string): Promise<string> {
-    if (!taskId) throw new Error("task_id was not sent");
+    if (!taskId || taskId === ":task_id")
+      throw ErrorsEnum.TASK_ID_WAS_NOT_PROVIDED;
 
     const status = await this.imageRepository.getImageStatus(taskId);
 
