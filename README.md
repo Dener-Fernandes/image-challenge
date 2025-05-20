@@ -58,19 +58,19 @@ Choose an API Plataform (ex: Postman, Insomnia). The one used in the examples is
 
 ### Uploading an Image
 
-1. Set the URL and the request to be able to upload a file named image:
-   ![alt text](image.png)
+1. Set the URL and the request to be able to upload a file named image:  
+   ![alt text](./src/application/images/image.png)
 
-2. The success response will be like this:
-   ![alt text](image-1.png)
+2. The success response will be like this:  
+   ![alt text](./src/application/images/image-1.png)
 
 ### Retrieving a Processed Image
 
-1. Set the URL and the request to be able to send a route param named task_id:
-   ![alt text](image-2.png)
+1. Set the URL and the request to be able to send a route param named task_id:  
+   ![alt text](./src/application/images/image-2.png)
 
-2. The success response will be like this:
-   ![alt text](image-3.png)
+2. The success response will be like this:  
+   ![alt text](./src/application/images/image-3.png)
 
 ## Key Design Decisions and Trade-offs
 

@@ -67,6 +67,8 @@ async function startWorker() {
         },
       });
 
+      await fs.unlink(imagePath);
+
       rabbitService.acknowledge(msg);
     } catch (error) {
       await imageUseCase.create({
@@ -79,6 +81,8 @@ async function startWorker() {
         originalMetadata: null,
         versions: null,
       });
+
+      await fs.unlink(imagePath);
 
       rabbitService.acknowledge(msg);
     }
