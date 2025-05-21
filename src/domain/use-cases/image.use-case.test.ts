@@ -9,16 +9,20 @@ import { v4 as uuidv4 } from "uuid";
 
 import { Readable } from "stream";
 
-const rabbitmqService = new RabbitMQService("FAKE_RABBITMQ_URL");
+const rabbitmqService = new RabbitMQService("FAKE_URL");
 const imageRepository = ImageRepository.getInstance();
 const imageStatus = { status: ImageStatusEnum.COMPLETED };
 const imageUseCase = new ImageUseCase(rabbitmqService, imageRepository);
 
 beforeEach(() => {
-  rabbitmqService.connect = jest.fn().mockResolvedValue(undefined);
-  rabbitmqService.publish = jest.fn().mockResolvedValue(undefined);
+  rabbitmqService.connect = jest.fn();
+  rabbitmqService.publish = jest.fn();
   imageRepository.create = jest.fn().mockResolvedValue(undefined);
   imageRepository.getImageStatus = jest.fn().mockResolvedValue(imageStatus);
+});
+
+afterEach(() => {
+  jest.clearAllMocks();
 });
 
 describe("ImageUseCase tests", () => {
@@ -81,9 +85,10 @@ describe("ImageUseCase tests", () => {
       },
     };
 
-    const result = await imageUseCase.create(fakeImage);
+    const spyiedMethod = jest.spyOn(imageUseCase, "create");
+    await imageUseCase.create(fakeImage);
 
-    expect(result).toBe(undefined);
+    expect(spyiedMethod).toHaveBeenCalledWith(fakeImage);
   });
 
   it("should be able to get an image status", async () => {
