@@ -24,6 +24,7 @@ class ImageUseCase {
       originalFilename: image.originalname,
       path: image.path,
       mimetype: image.mimetype,
+      retryCount: 0,
     };
 
     const queueName = process.env.QUEUE_NAME;

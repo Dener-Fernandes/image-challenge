@@ -14,9 +14,14 @@ class RabbitMQService implements QueueServiceInterface {
       this.connection = await amqp.connect(this.url);
       this.channel = await this.connection.createChannel();
 
-      logger.info("RabbitMQ connection and channel established");
+      logger.info(
+        "[RabbitMQService, connect method] RabbitMQ connection and channel established",
+      );
     } catch (error) {
-      logger.error({ err: error }, "Failed to connect to RabbitMQ");
+      logger.error(
+        { err: error },
+        "[RabbitMQService, connect method] Failed to connect to RabbitMQ",
+      );
 
       throw error;
     }
@@ -38,12 +43,12 @@ class RabbitMQService implements QueueServiceInterface {
     if (success) {
       logger.info(
         { taskId: task.taskId },
-        `Message published to queue '${queue}'`,
+        `[RabbitMQService, publish method] Message published to queue '${queue}'`,
       );
     } else {
       logger.warn(
         { taskId: task.taskId },
-        `Failed to publish message to queue '${queue}'`,
+        `[RabbitMQService, publish method] Failed to publish message to queue '${queue}'`,
       );
     }
   }
@@ -70,12 +75,17 @@ class RabbitMQService implements QueueServiceInterface {
             const task: TaskPayloadInterface = JSON.parse(content);
 
             logger.info(
-              `Message received from queue ${queue}. taskdId: ${task.taskId}`,
+              `[RabbitMQService, consume method] Message received from queue ${queue}. taskdId: ${task.taskId}`,
             );
 
             await callback(task, msg);
           } catch (err) {
-            throw new Error("Error when processing image");
+            logger.error(
+              { err },
+              "[RabbitMQService, consume method] Failed to process message",
+            );
+
+            this.acknowledge(msg);
           }
         }
       },
@@ -84,15 +94,22 @@ class RabbitMQService implements QueueServiceInterface {
       },
     );
 
-    logger.info(`Started consuming queue '${queue}'`);
+    logger.info(`[RabbitMQService] Started consuming queue '${queue}'`);
   }
 
   acknowledge(rawMessage: ConsumeMessage): void {
-    if (!this.channel) {
-      throw new Error("Channel is not initialized. Call connect() first");
-    }
+    try {
+      if (!this.channel) {
+        throw new Error("Channel is not initialized. Call connect() first");
+      }
 
-    this.channel.ack(rawMessage);
+      this.channel.ack(rawMessage);
+    } catch (err) {
+      logger.error(
+        { err },
+        "[RabbitMQService, acknowledge method] Failed to acknowledge message",
+      );
+    }
   }
 }
 
