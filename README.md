@@ -52,6 +52,15 @@ In your terminal, run the following commands in the order presented.
 1. `docker-compose build --no-cache`;
 2. `docker-compose up`.
 
+## Tests
+
+### Unit Tests
+
+For this application, unit tests were implemented covering **ImageUseCase**, **ImageRepository**, and **RabbitMQService**. Below are instructions on how to run them.
+
+- You can run all the tests using `npm run test`;
+- Or you can run the suits separated using `npx jest` + relative path to the test file. Example: `npx jest "src/domain/use-cases/image-use-case.test.ts"`.
+
 ## API Usage Examples
 
 Choose an API Plataform (ex: Postman, Insomnia). The one used in the examples is Postman.
@@ -76,4 +85,8 @@ Choose an API Plataform (ex: Postman, Insomnia). The one used in the examples is
 
 - A 3-tier architecture (Application, Domain, and Data layers) was adopted to ensure clear separation of concerns. This structure improves maintainability and readability, making it ideal for relatively simple services where modularity is important but full-blown architectural complexity is unnecessary;
 
-- Dependency Inversion and Dependency Injection principles were applied where appropriate. This promotes decoupling between components, makes the system more testable, and allows greater flexibility when substituting implementations or integrating with external systems.
+- Dependency Inversion and Dependency Injection principles were applied where appropriate. This promotes decoupling between components, makes the system more testable, and allows greater flexibility when substituting implementations or integrating with external systems;
+
+- A custom error-handling system was created without the use of external dependencies. When an error occurs (e.g., image not found), instead of throwing the raw error itself, a specific error title or identifier is thrown. This title is then captured by the error-handling system, which maps it to an appropriate HTTP status code and a descriptive message to be returned in the response;
+
+- Logging functionality was added to monitor the application, providing useful information (e.g., whether the application successfully connected to the database) for development purposes. The logging tracks connection attempts, asynchronous calls, thrown errors, and image processing operations.
