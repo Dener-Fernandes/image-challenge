@@ -6,7 +6,7 @@
     "start": "node dist/application/server.js",
     "build": "tsc",
     "start:dev": "tsnd --respawn --transpile-only --ignore-watch node_modules -r dotenv/config ./src/application/server.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
@@ -24,11 +24,14 @@
   "devDependencies": {
     "@types/amqplib": "^0.10.6",
     "@types/express": "^5.0.1",
+    "@types/jest": "^29.5.14",
     "@types/multer": "^1.4.12",
     "@types/node": "^22.15.18",
     "eslint": "^9.26.0",
     "eslint-config-prettier": "^10.1.5",
+    "jest": "^29.7.0",
     "prettier": "^3.5.3",
+    "ts-jest": "^29.3.4",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.32.1"
