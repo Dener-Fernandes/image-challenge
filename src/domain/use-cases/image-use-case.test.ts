@@ -5,19 +5,20 @@ import { ImageStatusEnum } from "../enums/image-status.enum";
 import { ImageInterface } from "../interfaces/image.interface";
 import { ImageUseCase } from "./image.use-case";
 
+import { v4 as uuidv4 } from "uuid";
+
 import { Readable } from "stream";
 
 const rabbitmqService = new RabbitMQService("FAKE_RABBITMQ_URL");
 const imageRepository = ImageRepository.getInstance();
-
-let imageUseCase: ImageUseCase;
+const imageStatus = { status: ImageStatusEnum.COMPLETED };
+const imageUseCase = new ImageUseCase(rabbitmqService, imageRepository);
 
 beforeEach(() => {
   rabbitmqService.connect = jest.fn().mockResolvedValue(undefined);
   rabbitmqService.publish = jest.fn().mockResolvedValue(undefined);
   imageRepository.create = jest.fn().mockResolvedValue(undefined);
-
-  imageUseCase = new ImageUseCase(rabbitmqService, imageRepository);
+  imageRepository.getImageStatus = jest.fn().mockResolvedValue(imageStatus);
 });
 
 describe("ImageUseCase tests", () => {
@@ -42,11 +43,72 @@ describe("ImageUseCase tests", () => {
     expect(result.status).toBe(ImageStatusEnum.PENDING);
   });
 
-  it("should be able to throw an error if image was not sent", () => {
+  it("should be able to throw an error if image was not provided", () => {
     const fakeImage = undefined;
 
     const result = imageUseCase.uploadImage(fakeImage);
 
-    expect(result).rejects.toBe(ErrorsEnum.IMAGE_WAS_NOT_SENT);
+    expect(result).rejects.toBe(ErrorsEnum.IMAGE_WAS_NOT_PROVIDED);
+  });
+
+  it("should be able to save an image", async () => {
+    const fakeImage: ImageInterface = {
+      taskId: "123e4567-e89b-12d3-a456-426614174000",
+      originalFilename: "example.jpg",
+      status: ImageStatusEnum.COMPLETED,
+      errorMessage: null,
+      mimetype: "image/jpeg",
+      processedAt: new Date("2025-01-01T12:00:00Z"),
+      originalMetadata: {
+        width: 1920,
+        height: 1080,
+        mimetype: "image/jpeg",
+        exif: {},
+      },
+      versions: {
+        low: {
+          path: "/output/123/low-example.jpg",
+          size: 20480, // bytes
+        },
+        medium: {
+          path: "/output/123/medium-example.jpg",
+          size: 102400,
+        },
+        high_optimized: {
+          path: "/output/123/high-example.jpg",
+          size: 204800,
+        },
+      },
+    };
+
+    const result = await imageUseCase.create(fakeImage);
+
+    expect(result).toBe(undefined);
+  });
+
+  it("should be able to get an image status", async () => {
+    const taskId = uuidv4();
+
+    const result = await imageUseCase.getImageStatus(taskId);
+
+    expect(result).toEqual(imageStatus);
+  });
+
+  it("should be able to throw an error if taskId was not provided", () => {
+    const taskId = ":task_id";
+
+    const result = imageUseCase.getImageStatus(taskId);
+
+    expect(result).rejects.toBe(ErrorsEnum.TASK_ID_WAS_NOT_PROVIDED);
+  });
+
+  it("should be able to throw an error if image was not found", () => {
+    imageRepository.getImageStatus = jest.fn().mockResolvedValueOnce(null);
+
+    const taskId = uuidv4();
+
+    const result = imageUseCase.getImageStatus(taskId);
+
+    expect(result).rejects.toBe(ErrorsEnum.IMAGE_NOT_FOUND);
   });
 });
