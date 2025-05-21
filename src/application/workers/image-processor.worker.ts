@@ -5,6 +5,7 @@ import { RabbitMQService } from "../services/rabbitmq.service";
 import { ImageUseCase } from "../../domain/use-cases/image.use-case";
 import { ImageStatusEnum } from "../../domain/enums/image-status.enum";
 import { ImageRepository } from "../../data/repositories/image.repository";
+import { logger } from "../utils/logger";
 
 const rabbitMQUrl = process.env.RABBITMQ_URL;
 const queueName = process.env.QUEUE_NAME;
@@ -12,7 +13,15 @@ const outputDir = path.resolve(__dirname, "../output");
 
 async function startWorker() {
   const rabbitService = new RabbitMQService(rabbitMQUrl);
-  await rabbitService.connect();
+
+  try {
+    await rabbitService.connect();
+    logger.info("RabbitMQ connection established in worker");
+  } catch (error) {
+    logger.error({ err: error }, "Failed to connect to RabbitMQ");
+
+    throw error;
+  }
 
   const imageRepository = ImageRepository.getInstance();
   const imageUseCase = new ImageUseCase(rabbitService, imageRepository);
@@ -69,8 +78,14 @@ async function startWorker() {
 
       await fs.unlink(imagePath);
 
+      logger.info({ taskId }, "Image processed and original file deleted");
+
       rabbitService.acknowledge(msg);
+
+      logger.info({ taskId }, "Message acknowledged");
     } catch (error) {
+      logger.error({ err: error, taskId }, "Error while processing image task");
+
       await imageUseCase.create({
         taskId,
         originalFilename,
@@ -85,6 +100,8 @@ async function startWorker() {
       await fs.unlink(imagePath);
 
       rabbitService.acknowledge(msg);
+
+      logger.info({ taskId }, "Failed task message acknowledged");
     }
   });
 }
