@@ -1,2 +1,13 @@
+# Compiled output
 node_modules
+dist
+
+# dotenv environment variable files
 .env
+
+# images directories
+tmp
+output
+
+# Docker
+docker-compose.yml

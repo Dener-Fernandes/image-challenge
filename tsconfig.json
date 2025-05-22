@@ -12,5 +12,6 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "skipLibCheck": true
-  }
+  },
+  "include": ["src", "**/*.test.ts"]
 }

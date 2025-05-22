@@ -1,5 +1,6 @@
 import { app } from "./app";
+import { logger } from "./utils/logger";
 
 const port = process.env.PORT || "8080";
 
-app.listen(port, () => console.log("Server online"));
+app.listen(port, () => logger.info("Server online"));

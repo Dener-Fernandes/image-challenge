@@ -1,0 +1,34 @@
+services:
+  rabbitmq:
+    image:
+    container_name:
+    ports:
+    environment:
+      RABBITMQ_DEFAULT_USER:
+      RABBITMQ_DEFAULT_PASS:
+
+  mongodb:
+    image:
+    container_name:
+    restart:
+    ports:
+
+    environment:
+      MONGO_INITDB_ROOT_USERNAME:
+      MONGO_INITDB_ROOT_PASSWORD:
+
+  app:
+    build:
+    container_name:
+    restart:
+    depends_on:
+      rabbitmq:
+        condition:
+      mongodb:
+        condition:
+    environment:
+      PORT: 8080
+      RABBITMQ_URL:
+      QUEUE_NAME:
+      DATABASE_URL:
+    command:
