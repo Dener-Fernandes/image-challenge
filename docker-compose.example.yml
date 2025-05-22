@@ -27,7 +27,7 @@ services:
       mongodb:
         condition:
     environment:
-      PORT: 8080
+      PORT:
       RABBITMQ_URL:
       QUEUE_NAME:
       DATABASE_URL:
