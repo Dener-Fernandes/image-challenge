@@ -1,6 +1,7 @@
 import amqplib from "amqplib";
 import { RabbitMQService } from "./rabbitmq.service";
 import { TaskPayloadInterface } from "../../domain/interfaces/task-payload.interface";
+import { logger } from "../utils/logger";
 
 jest.mock("amqplib");
 
@@ -38,6 +39,7 @@ describe("RabbitMQService", () => {
       originalFilename: "test.jpg",
       path: "/tmp/test.jpg",
       mimetype: "image/jpeg",
+      retryCount: 0,
     };
 
     await service.publish("test-queue", fakeTask);
@@ -58,6 +60,7 @@ describe("RabbitMQService", () => {
       originalFilename: "test.jpg",
       path: "/tmp/test.jpg",
       mimetype: "image/jpeg",
+      retryCount: 0,
     };
 
     const fakeMessage = {
@@ -88,14 +91,15 @@ describe("RabbitMQService", () => {
   it("should b able to throw an error if publish is called before connect", async () => {
     const service = new RabbitMQService(fakeUrl);
 
-    const task = {
+    const fakeTask = {
       taskId: "123e4567-e89b-12d3-a456-426614174000",
       originalFilename: "image.jpg",
       path: "/tmp/image.jpg",
       mimetype: "image/jpeg",
+      retryCount: 0,
     };
 
-    await expect(service.publish("queue", task)).rejects.toThrow(
+    await expect(service.publish("queue", fakeTask)).rejects.toThrow(
       "Channel is not initialized. Call connect() first",
     );
   });
@@ -108,12 +112,21 @@ describe("RabbitMQService", () => {
     );
   });
 
-  it("should be able to throw an error if acknowledge is called before connect", () => {
+  it("should log an error if acknowledge is called before connect", () => {
     const service = new RabbitMQService(fakeUrl);
 
-    expect(() => service.acknowledge({} as any)).toThrow(
-      "Channel is not initialized. Call connect() first",
+    const errorSpy = jest.spyOn(logger, "error").mockImplementation(() => {});
+
+    service.acknowledge({} as any);
+
+    expect(errorSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        err: expect.any(Error),
+      }),
+      "[RabbitMQService, acknowledge method] Failed to acknowledge message",
     );
+
+    errorSpy.mockRestore();
   });
 
   it("should be able to throw an error if processing image fails", async () => {

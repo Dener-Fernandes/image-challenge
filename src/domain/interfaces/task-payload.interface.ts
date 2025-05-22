@@ -3,6 +3,7 @@ interface TaskPayloadInterface {
   originalFilename: string;
   path: string;
   mimetype: string;
+  retryCount: number;
 }
 
 export { TaskPayloadInterface };

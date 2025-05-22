@@ -2,7 +2,7 @@
 
 ## Solution
 
-The developed solution is a Node.js application with TypeScript that handles the reception, processing, and storage of images, based on a microservices architecture using RabbitMQ messaging. The application receives images through an HTTP route and stores them in a temporary folder (`tmp`). Then, a message is sent to a RabbitMQ queue, which triggers a service responsible for processing the image and generating optimized versions saved in the `output` folder.
+The developed solution is a Node.js application with TypeScript that handles the reception, processing, and storage of images, based on a microservices architecture using RabbitMQ messaging. The application receives images through an HTTP route and stores them in a temporary folder (`tmp`). Then, a message is sent to a RabbitMQ queue, which triggers a service responsible for processing the image and generating optimized versions saved in the `output` folder. The optimized images are generated in the WebP format, which provides better compression and performance for web usage. Additionally, the system includes a retry mechanism that automatically attempts to reprocess failed tasks up to a configurable limit, enhancing reliability in case of transient errors.
 
 Metadata persistence and image processing state control are handled with MongoDB. Both the application and the supporting services (RabbitMQ and MongoDB) can be easily run using Docker, simplifying environment setup and execution.
 

@@ -6,19 +6,22 @@ import { ImageUseCase } from "../../domain/use-cases/image.use-case";
 import { ImageStatusEnum } from "../../domain/enums/image-status.enum";
 import { ImageRepository } from "../../data/repositories/image.repository";
 import { logger } from "../utils/logger";
+import { existsSync } from "fs";
 
 const rabbitMQUrl = process.env.RABBITMQ_URL;
 const queueName = process.env.QUEUE_NAME;
 const outputDir = path.resolve(__dirname, "../output");
+
+const maxRetries = 3;
 
 async function startWorker() {
   const rabbitService = new RabbitMQService(rabbitMQUrl);
 
   try {
     await rabbitService.connect();
-    logger.info("RabbitMQ connection established in worker");
+    logger.info("[startWorker] RabbitMQ connection established in worker");
   } catch (error) {
-    logger.error({ err: error }, "Failed to connect to RabbitMQ");
+    logger.error({ err: error }, "[startWorker] Failed to connect to RabbitMQ");
 
     throw error;
   }
@@ -39,15 +42,25 @@ async function startWorker() {
 
       await fs.mkdir(`${outputDir}/${taskId}`, { recursive: true });
 
+      const baseName = path.parse(originalFilename).name;
+
       const versions = {
-        low: `${outputDir}/${taskId}/low-${originalFilename}`,
-        medium: `${outputDir}/${taskId}/medium-${originalFilename}`,
-        high_optimized: `${outputDir}/${taskId}/high-${originalFilename}`,
+        low: `${outputDir}/${taskId}/low-${baseName}.webp`,
+        medium: `${outputDir}/${taskId}/medium-${baseName}.webp`,
+        high_optimized: `${outputDir}/${taskId}/high-${baseName}.webp`,
       };
 
-      await image.clone().resize({ width: 320 }).toFile(versions.low);
-      await image.clone().resize({ width: 800 }).toFile(versions.medium);
-      await image.clone().toFile(versions.high_optimized);
+      await image
+        .clone()
+        .resize({ width: 320 })
+        .toFormat("webp")
+        .toFile(versions.low);
+      await image
+        .clone()
+        .resize({ width: 800 })
+        .toFormat("webp")
+        .toFile(versions.medium);
+      await image.clone().toFormat("webp").toFile(versions.high_optimized);
 
       const lowStats = await fs.stat(versions.low);
       const mediumStats = await fs.stat(versions.medium);
@@ -76,32 +89,60 @@ async function startWorker() {
         },
       });
 
-      await fs.unlink(imagePath);
+      if (existsSync(imagePath)) {
+        await fs.unlink(imagePath);
+      }
 
-      logger.info({ taskId }, "Image processed and original file deleted");
+      logger.info(
+        { taskId },
+        "[startWorker] Image processed and original file deleted",
+      );
 
       rabbitService.acknowledge(msg);
 
-      logger.info({ taskId }, "Message acknowledged");
+      logger.info({ taskId }, "[startWorker] Message acknowledged");
     } catch (error) {
-      logger.error({ err: error, taskId }, "Error while processing image task");
+      const retryCount = Number(task.retryCount ?? 0);
 
-      await imageUseCase.create({
-        taskId,
-        originalFilename,
-        mimetype,
-        processedAt: new Date(),
-        status: ImageStatusEnum.FAILED,
-        errorMessage: error.message,
-        originalMetadata: null,
-        versions: null,
-      });
+      if (retryCount < maxRetries) {
+        logger.warn(
+          `[startWorker] Retrying task ${taskId}. Attempt #${retryCount + 1}`,
+        );
 
-      await fs.unlink(imagePath);
+        await rabbitService.publish(queueName, {
+          ...task,
+          retryCount: retryCount + 1,
+        });
+      } else {
+        logger.error(
+          { err: error },
+          `Task ${taskId} failed after ${maxRetries} attempts`,
+        );
+
+        await imageUseCase.create({
+          taskId,
+          originalFilename,
+          mimetype,
+          processedAt: new Date(),
+          status: ImageStatusEnum.FAILED,
+          errorMessage: error.message,
+          originalMetadata: null,
+          versions: null,
+        });
+
+        if (existsSync(imagePath)) {
+          await fs.unlink(imagePath);
+        }
+
+        logger.warn(
+          { taskId },
+          "[startWorker] Image not processed and original file deleted",
+        );
+      }
 
       rabbitService.acknowledge(msg);
 
-      logger.info({ taskId }, "Failed task message acknowledged");
+      logger.warn({ taskId }, "[startWorker] Failed task message acknowledged");
     }
   });
 }
